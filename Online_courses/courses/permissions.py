@@ -16,15 +16,9 @@ class CheckEditCourse(permissions.BasePermission):
 
 
 
-class CheckEditAssignment(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return  request.user == obj.course.owner
-
-
-
-class CheckExam(permissions.BasePermission):
+class CheckCreateLesson(permissions.BasePermission):
     def has_permission(self, request, view):
-        return  request.user.user_role == 'student'
+        return request.user.user_role == 'teacher'
 
 
 

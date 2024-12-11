@@ -26,18 +26,6 @@ class Category(models.Model):
 
 
 
-class Lesson(models.Model):
-    title = models.CharField(max_length=32)
-    video_url = models.URLField()
-    content = models.TextField()
-    course = models.URLField()
-
-
-    def __str__(self):
-        return self.title
-
-
-
 class Course(models.Model):
     course_name = models.CharField(max_length=32)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -51,8 +39,8 @@ class Course(models.Model):
     price = models.PositiveSmallIntegerField()
     created_by = models.URLField()
     created_date = models.DateTimeField(auto_now_add=True)
-    content = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='course_content')
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    image  = models.ImageField(upload_to='course_images/')
 
 
     def __str__(self):
@@ -74,6 +62,18 @@ class Course(models.Model):
 
 
 
+class Lesson(models.Model):
+    title = models.CharField(max_length=32)
+    video_url = models.URLField()
+    content = models.TextField()
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='course_content')
+
+
+    def __str__(self):
+        return self.title
+
+
+
 class Assignment(models.Model):
     title = models.CharField(max_length=32)
     description = models.TextField()
@@ -87,19 +87,9 @@ class Assignment(models.Model):
 
 
 
-class Question(models.Model):
-    question = models.TextField()
-
-
-    def __str__(self):
-        return self.question
-
-
-
 class Exam(models.Model):
     title = models.CharField(max_length=32)
-    course = models.URLField()
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     passing_score = models.IntegerField(choices=[(i, str(i)) for i in range(1, 101)])
     duration = models.DateTimeField()
     student = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
@@ -110,9 +100,19 @@ class Exam(models.Model):
 
 
 
+class Question(models.Model):
+    course = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    question = models.TextField()
+
+
+    def __str__(self):
+            return self.question
+
+
+
 class Certificate(models.Model):
-    student = models.URLField()
-    course = models.URLField()
+    student = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     issued_at = models.DateTimeField()
     certificate_url = models.URLField()
 
@@ -123,7 +123,7 @@ class Certificate(models.Model):
 
 
 class CourseReview(models.Model):
-    user = models.URLField()
+    user = models.ForeignKey(UserProfile, on_delete= models.CASCADE)
     course = models.ForeignKey(Course, on_delete= models.CASCADE, related_name='course_reviews')
     rating = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     comment = models.TextField()
@@ -135,7 +135,7 @@ class CourseReview(models.Model):
 
 
 class TeacherReview(models.Model):
-    user = models.URLField()
+    user = models.ForeignKey(UserProfile, on_delete= models.CASCADE, related_name='review_user')
     teacher  = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='teacher_review')
     rating = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     comment = models.TextField()
