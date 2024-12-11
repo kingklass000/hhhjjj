@@ -4,7 +4,7 @@ from .views import *
 
 
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'users', UserProfileViewSet, basename='users')
 router.register(r'category', CategoryViewSet, basename='category')
 router.register(r'assignment', AssignmentViewSet, basename='assignment')
